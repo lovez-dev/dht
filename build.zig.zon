@@ -1,0 +1,23 @@
+.{
+    .name = .dht,
+    .version = "0.1.0",
+    .dependencies = .{
+        .zlap = .{
+            .url = "git+https://github.com/lovez-dev/zlap.git#a5a8149c80900eab4058c570c1bc9c63a54ae68b",
+            .hash = "zlap-0.1.0-o7HR1PiEAAAVAHF0gTcqp9tLjQWaK7dTI35SN55n_Ggb",
+        },
+    },
+    .minimum_zig_version = "0.17.1",
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "tests",
+        "examples",
+        "bench",
+        "docs",
+        "README.md",
+        "LICENSE",
+    },
+    .fingerprint = 0x4ad3ee64d378a4c0,
+}

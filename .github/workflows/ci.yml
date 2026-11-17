@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: Linux x64
+            runner: ubuntu-24.04
+          - platform: Windows x64
+            runner: windows-2025
+          - platform: macOS ARM64
+            runner: macos-15
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up toolchain
+        uses: mlugg/setup-zig@v2
+        with:
+          version: 0.17.1
+      - name: Check and test
+        run: |
+          mkdir -p out
+          zig build check test stress -Doptimize=safe --summary all 2>&1 | tee out/tests.log
+      - name: Build examples and benchmarks
+        run: |
+          zig build examples bench-build -Doptimize=fast --summary all 2>&1 | tee out/build.log
+      - name: Save logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-${{ matrix.runner }}
+          path: out/*.log
+          if-no-files-found: ignore
